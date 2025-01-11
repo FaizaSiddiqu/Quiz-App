@@ -61,6 +61,8 @@ const nextBtn = document.getElementById("next-btn");
 
 let currentQuestionIndex =  0 
 let score = 0;
+let Timer;       // to keep track of the time
+let timeLimit = 10;       //  Time limit for each question in seconds
 
 function startQuiz(){
     currentQuestionIndex = 0
@@ -85,10 +87,13 @@ function showQuestion(){
         }
         button.addEventListener("click" , selectAnswer)
     });
+
+    startTimer();        //Strat the timer for each question
 };
 
 function resetState(){
     nextBtn.style.display = "none";
+    clearTimeout(Timer);             // clear the timer when resetting state
     while(answerButtons.firstChild){
         answerButtons.removeChild(answerButtons.firstChild)
     }
@@ -110,6 +115,7 @@ function selectAnswer(e){
         button.disabled = true;
     })
     nextBtn.style.display = "block";
+    clearTimeout(Timer);         // clear the timer when an answer is selected
 }
 
 function showScore(){
@@ -135,6 +141,29 @@ nextBtn.addEventListener("click", () => {
         startQuiz()
     }
 })
+
+function startTimer() {
+    let timeRemaining = timeLimit;
+    timer = setTimeout(() => {
+        // Move to the next question when the time is up
+        handleNextButton();
+    }, timeRemaining * 1000); // Convert seconds to milliseconds
+
+    // Optional: Display the countdown (you can add this as an extra feature)
+    const countdownElement = document.createElement("div");
+    countdownElement.id = "countdown";
+    countdownElement.innerHTML = `Time remaining: ${timeRemaining} seconds`;
+    questionElement.appendChild(countdownElement);
+
+    const countdownInterval = setInterval(() => {
+        timeRemaining--;
+        countdownElement.innerHTML = `Time remaining: ${timeRemaining} seconds`;
+        if (timeRemaining <= 0) {
+            clearInterval(countdownInterval);
+        }
+    }, 1000); // Update every second
+}
+
 
 startQuiz()
 
